@@ -1,17 +1,28 @@
+'use client';
 export default function PresaleForm() {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    // Important: POST to a static HTML file so Netlify detects the form with plugin v5
+    const res = await fetch("/__forms.html", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(data as any).toString(),
+    });
+    if (res.ok) {
+      window.location.href = "/thanks";
+    } else {
+      alert("Something went wrong. Please try again.");
+    }
+  }
   return (
     <form
       name="presale"
-      method="POST"
-      action="/thanks"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
+      onSubmit={handleSubmit}
       className="card p-6 space-y-4"
     >
       <input type="hidden" name="form-name" value="presale" />
-      <p className="hidden">
-        <label>Don’t fill this out: <input name="bot-field" /></label>
-      </p>
       <div className="grid md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm mb-1">Name</label>
